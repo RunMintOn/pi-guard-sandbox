@@ -1,6 +1,6 @@
 import { join } from "node:path";
 import { DEFAULT_NETWORK_ALLOWLIST } from "./constants.mjs";
-import { getWorkspaceRoot } from "./path-utils.mjs";
+import { getWorkspaceRoot, normalizeSensitivePathPattern } from "./path-utils.mjs";
 
 export function buildSandboxRuntimeConfig({ cwd, config }) {
   const workspaceRoot = getWorkspaceRoot(cwd);
@@ -15,7 +15,7 @@ export function buildSandboxRuntimeConfig({ cwd, config }) {
       allowAllUnixSockets: true,
     },
     filesystem: {
-      denyRead: [...config.sensitiveReadDeny],
+      denyRead: [...new Set(config.sensitiveReadDeny.map((pattern) => normalizeSensitivePathPattern(pattern)))],
       allowWrite,
       denyWrite,
       allowRead: config.mode === "workspace-write" ? [workspaceRoot] : undefined,

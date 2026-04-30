@@ -90,8 +90,14 @@ export function globToRegExp(glob, { matchSubpaths = false } = {}) {
   return new RegExp(regex);
 }
 
+export function normalizeSensitivePathPattern(rawPattern) {
+  const pattern = normalizeSlashes(normalizePathToken(rawPattern));
+  if (hasGlobMagic(pattern)) return pattern;
+  return normalizeSlashes(realpathOrNull(pattern) ?? pattern);
+}
+
 export function matchesPathOrDescendant(candidatePath, rawPattern) {
-  const pattern = normalizeSlashes(normalizePathToken(rawPattern)).replace(/\/+$/, "");
+  const pattern = normalizeSensitivePathPattern(rawPattern).replace(/\/+$/, "");
   const candidate = normalizeSlashes(candidatePath).replace(/\/+$/, "");
   if (!hasGlobMagic(pattern)) {
     return candidate === pattern || candidate.startsWith(`${pattern}/`);

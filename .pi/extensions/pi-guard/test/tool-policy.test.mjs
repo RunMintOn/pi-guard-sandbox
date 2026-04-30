@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync, mkdirSync, writeFileSync } from "node:fs";
+import { mkdtempSync, mkdirSync, writeFileSync, symlinkSync } from "node:fs";
 import { tmpdir, homedir } from "node:os";
 import { join } from "node:path";
 import { createGuardController } from "../src/guard.mjs";
@@ -64,6 +64,32 @@ test("external reads are allowed except sensitive read paths", async () => {
   assert.equal(safeRead.status, "allow");
   assert.equal(sensitiveRead.status, "block");
   assert.match(sensitiveRead.reason, /Sensitive read denied/);
+});
+
+test("sensitive read deny follows symlinked configured paths", async () => {
+  const cwd = tempWorkspace();
+  const realRoot = join(cwd, "real-home");
+  mkdirSync(join(realRoot, ".aws"), { recursive: true });
+  writeFileSync(join(realRoot, ".aws", "credentials"), "secret\n", "utf8");
+  const aliasRoot = join(cwd, "alias-home");
+  mkdirSync(aliasRoot, { recursive: true });
+  symlinkSync(join(realRoot, ".aws"), join(aliasRoot, ".aws"));
+
+  const config = createDefaultConfig();
+  config.sensitiveReadDeny = [join(aliasRoot, ".aws")];
+  await writeConfig(cwd, config);
+
+  const guard = createGuardController({ cwd, sandbox: createSandbox() });
+  await guard.refresh();
+
+  const denied = await guard.handleToolCall({
+    toolName: "read",
+    input: { path: join(aliasRoot, ".aws", "credentials") },
+    hasUI: false,
+  });
+
+  assert.equal(denied.status, "block");
+  assert.match(denied.reason, /Sensitive read denied/);
 });
 
 test("protected paths block or ask according to config", async () => {

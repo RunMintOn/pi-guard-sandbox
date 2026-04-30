@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { mkdtempSync } from "node:fs";
+import { mkdtempSync, mkdirSync, symlinkSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { createGuardController } from "../src/guard.mjs";
@@ -46,6 +46,22 @@ test("sandbox config enforces readonly and workspace-write write roots", () => {
   assert.deepEqual(readonly.filesystem.allowWrite, ["/tmp"]);
   assert.equal(writable.filesystem.allowWrite.includes(cwd), true);
   assert.equal(writable.filesystem.denyWrite.some((entry) => entry.endsWith(".pi/pi-guard.json")), true);
+});
+
+test("sandbox config resolves symlinked sensitive read paths to real targets", () => {
+  const cwd = tempWorkspace();
+  const targetRoot = join(cwd, "real-home");
+  mkdirSync(join(targetRoot, ".aws"), { recursive: true });
+  const aliasRoot = join(cwd, "alias-home");
+  mkdirSync(aliasRoot, { recursive: true });
+  symlinkSync(join(targetRoot, ".aws"), join(aliasRoot, ".aws"));
+
+  const config = createDefaultConfig();
+  config.mode = "readonly";
+  config.sensitiveReadDeny = [join(aliasRoot, ".aws")];
+
+  const runtimeConfig = buildSandboxRuntimeConfig({ cwd, config });
+  assert.deepEqual(runtimeConfig.filesystem.denyRead, [join(targetRoot, ".aws")]);
 });
 
 test("dangerous bash commands are blocked or approval-gated", async () => {
