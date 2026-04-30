@@ -1,6 +1,8 @@
 > [!TIP]
 > Two rounds of real-world testing — **all passed**. Routine bash, file I/O, and git operations feel seamless. Out-of-bounds writes, dangerous commands, and sensitive reads are blocked on contact.
 
+**Platform: Linux / WSL.** macOS may work but hasn't been tested. Windows is not supported.
+
 <img src="image-1.png" width="500" />
 <img src="image.png" width="500" />
 
