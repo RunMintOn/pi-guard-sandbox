@@ -17,11 +17,10 @@
 ### 项目依赖
 
 ```bash
-cd .pi/extensions/pi-guard
-npm install
+cd .pi/extensions/pi-guard && npm install
 ```
 
-> 暂不支持 `pi install` 一键安装，后续版本会增加。
+> 发布到 npm 后可直接 `pi install npm:pi-guard`。
 
 ---
 

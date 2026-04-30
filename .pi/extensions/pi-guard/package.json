@@ -1,6 +1,9 @@
 {
-  "name": "pi-guard-extension",
-  "private": true,
+  "name": "pi-guard",
+  "version": "0.1.0",
+  "description": "Write-boundary protection for Pi coding agent — sandboxed bash, file tool approval, dangerous command blocking",
+  "keywords": ["pi-package"],
+  "license": "MIT",
   "type": "module",
   "scripts": {
     "test": "node --test ./test/*.test.mjs"
