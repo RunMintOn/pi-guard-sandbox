@@ -1,6 +1,13 @@
 # Pi Guard v0.1
 
-**Pi Guard** 是一个 Pi coding agent 的扩展。为 Agent 发出的文件读写和 bash 命令加上**写边界保护**：防止越界修改、拦截危险命令，同时尽量保留 Agent 的正常工作效率。
+> 两轮真实环境测试 **全部通过**：日常 bash、文件读写、git 操作丝滑无感；越界写入、危险命令、敏感读取一击即拦。
+
+**Pi Guard** 给你的 Agent 加了一层 OS 级的**写边界保护**。它不靠正则猜意图，不搞令牌审批地狱。它知道什么时候该闭嘴让你干活，什么时候该出手替你挡刀。
+
+- 🧠 **聪明**：工作区内任意发挥，工作区外寸步难行
+- 🪶 **无感**：不打断你的正常编码流，只拦截真正越界的操作
+- 🛡️ **硬核**：bash 命令运行在真实 sandbox 里，不是字符串匹配
+- 🎯 **精准**：read-only 和 workspace-write 两个模式，选一个就不用再纠结
 
 ---
 
@@ -16,20 +23,26 @@
 
 ### 安装扩展
 
-**项目级**（只对当前项目生效）：
+#### 从 npm 安装
+
+```bash
+pi install npm:pi-guard-sandbox      # 全局安装，所有项目生效
+pi install -l npm:pi-guard-sandbox   # 仅当前项目生效
+```
+
+安装完成后进入项目，执行 `/guard i` 初始化。
+
+#### 在本仓库内安装
+
+如果你已经克隆了本仓库，扩展代码就在 `.pi/extensions/pi-guard/` 下：
 
 ```bash
 cd .pi/extensions/pi-guard && npm install
 ```
 
-**全局**（对所有项目生效）：
+启动 Pi，执行 `/guard i` 初始化。
 
-```bash
-cp -r .pi/extensions/pi-guard ~/.pi/agent/extensions/pi-guard
-cd ~/.pi/agent/extensions/pi-guard && npm install
-```
-
-> 发布到 npm 后可直接 `pi install npm:pi-guard`。Pi 自动发现 `.pi/extensions/`（项目级）和 `~/.pi/agent/extensions/`（全局）下的扩展。
+> 要全局安装，将 `.pi/extensions/pi-guard/` 复制到 `~/.pi/agent/extensions/pi-guard/`，在该目录执行 `npm install` 即可。
 
 ---
 
@@ -81,7 +94,90 @@ cd ~/.pi/agent/extensions/pi-guard && npm install
 
 ---
 
-## 5. Guard 在你的项目里留下了什么
+## 5. 配置文件 `.pi/pi-guard.json`
+
+`/guard init` 会在项目根目录生成这个文件，你也可以手动编辑（修改后需 `/reload` 生效）。
+
+```json
+{
+  "mode": "workspace-write",
+
+  "sensitiveReadDeny": [
+    "~/.ssh",
+    "~/.aws",
+    "~/.npmrc"
+  ],
+
+  "protectedPaths": {
+    "block": [
+      ".git",
+      "node_modules"
+    ],
+    "approval": [
+      ".env",
+      ".env.*",
+      ".pi/pi-guard.json"
+    ]
+  },
+
+  "bashPolicy": {
+    "directBlock": [
+      "sudo",
+      "su",
+      "dd"
+    ],
+    "requireApproval": [
+      "rm-rf",
+      "git-reset-hard",
+      "git-clean-fd"
+    ]
+  }
+}
+```
+
+### 字段说明
+
+| 字段 | 说明 |
+|------|------|
+| `mode` | `"readonly"` 或 `"workspace-write"`。`/guard r` / `/guard w` 可直接切换 |
+| `sensitiveReadDeny` | 禁止读取的路径，支持 `~` 和 glob。对所有 Agent 读操作生效 |
+| `protectedPaths.block` | `write` / `edit` 直接拒绝的路径 |
+| `protectedPaths.approval` | `write` / `edit` 弹审批的路径 |
+| `bashPolicy.directBlock` | bash 直接拒绝的命令 |
+| `bashPolicy.requireApproval` | bash 需审批的命令 |
+
+### 添加你自己的敏感路径
+
+比如不想让 Agent 读你的项目密钥文件：
+
+```json
+"sensitiveReadDeny": [
+  "~/.ssh",
+  "~/.aws",
+  "~/my-project/secrets.yml"
+]
+```
+
+### 添加你要拦截的危险命令
+
+```json
+"bashPolicy": {
+  "directBlock": [
+    "sudo",
+    "docker-host-root-bind"
+  ],
+  "requireApproval": [
+    "rm-rf",
+    "bash-c"
+  ]
+}
+```
+
+> `bashPolicy` 里的是**策略 ID**，不是正则。完整可用的 ID 列表见 `init` 生成的默认配置。
+
+---
+
+## 6. Guard 在你的项目里留下了什么
 
 | 项目 | 说明 |
 |------|------|
@@ -95,7 +191,7 @@ cd ~/.pi/agent/extensions/pi-guard && npm install
 
 ---
 
-## 6. 故障排查
+## 7. 故障排查
 
 | 状态 | 原因 | 处理 |
 |------|------|------|
