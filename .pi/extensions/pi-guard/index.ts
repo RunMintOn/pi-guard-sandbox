@@ -60,7 +60,7 @@ export default async function (pi: ExtensionAPI) {
   });
 
   pi.registerCommand("guard", {
-    description: "Show or manage Pi Guard status",
+    description: "/guard [init|read-only|workspace-write] — Show or switch Guard mode",
     handler: async (args, ctx) => {
       try {
         const command = String(args ?? "").trim();
@@ -77,14 +77,15 @@ export default async function (pi: ExtensionAPI) {
           return;
         }
 
-        if (command === "readonly" || command === "workspace-write") {
-          const status = await guard.setMode(command);
-          ctx.ui.notify(`Guard mode set to ${status.mode}`, "success");
+        if (command === "readonly" || command === "read-only" || command === "workspace-write") {
+          const mode = command === "read-only" ? "readonly" : command;
+          const status = await guard.setMode(mode);
+          ctx.ui.notify(`Guard mode set to read-only`, "success");
           updateStatus(ctx);
           return;
         }
 
-        ctx.ui.notify("Usage: /guard [init|readonly|workspace-write]", "warning");
+        ctx.ui.notify("Usage: /guard [init|read-only|workspace-write]", "warning");
       } catch (error) {
         ctx.ui.notify(error instanceof Error ? error.message : String(error), "error");
       }
