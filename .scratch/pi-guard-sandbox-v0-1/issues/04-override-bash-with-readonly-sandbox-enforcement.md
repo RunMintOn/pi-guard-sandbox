@@ -8,13 +8,18 @@ Override the built-in `bash` tool so Agent-issued bash commands run through `@an
 
 ## Acceptance criteria
 
-- [ ] Agent-issued `bash` runs through the sandbox backend instead of the host's unrestricted local bash implementation.
-- [ ] In `readonly`, bash can run normal commands but cannot write to the real workspace, real home, or other real persistent filesystem paths.
-- [ ] In `readonly`, bash can still write to sandbox-local temporary runtime locations such as `/tmp`, temporary HOME, and cache directories.
-- [ ] Sensitive read deny paths from `.pi/pi-guard.json` are enforced for bash reads via sandbox configuration.
-- [ ] If sandbox initialization or activation fails, Guard does not silently fall back to unrestricted bash and instead enters an explicit inactive/error state.
+- [x] Agent-issued `bash` runs through the sandbox backend instead of the host's unrestricted local bash implementation.
+- [x] In `readonly`, bash can run normal commands but cannot write to the real workspace, real home, or other real persistent filesystem paths.
+- [x] In `readonly`, bash can still write to sandbox-local temporary runtime locations such as `/tmp`, temporary HOME, and cache directories.
+- [x] Sensitive read deny paths from `.pi/pi-guard.json` are enforced for bash reads via sandbox configuration.
+- [x] If sandbox initialization or activation fails, Guard does not silently fall back to unrestricted bash and instead enters an explicit inactive/error state.
 
 ## Blocked by
 
 - `01-bootstrap-pi-guard-config-status-and-init-flow.md`
 - `02-add-runtime-mode-switching-backed-by-pi-guard-config.md`
+
+## Comments
+
+- Implemented in `.pi/extensions/pi-guard/`.
+- Covered by `npm test` in `.pi/extensions/pi-guard/`.

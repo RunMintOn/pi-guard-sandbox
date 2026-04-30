@@ -8,12 +8,17 @@ Add runtime mode switching for Pi Guard using the project-local `.pi/pi-guard.js
 
 ## Acceptance criteria
 
-- [ ] `/guard readonly` updates `.pi/pi-guard.json`, updates in-memory Guard state immediately, and shows the new mode in the UI.
-- [ ] `/guard workspace-write` updates `.pi/pi-guard.json`, updates in-memory Guard state immediately, and shows the new mode in the UI.
-- [ ] New configs created by `/guard init` default to `workspace-write`.
-- [ ] Mode switching does not require restarting Pi or running `/reload`.
-- [ ] The displayed Guard status remains explicit when switching modes and still states that scope is limited to agent tools only.
+- [x] `/guard readonly` updates `.pi/pi-guard.json`, updates in-memory Guard state immediately, and shows the new mode in the UI.
+- [x] `/guard workspace-write` updates `.pi/pi-guard.json`, updates in-memory Guard state immediately, and shows the new mode in the UI.
+- [x] New configs created by `/guard init` default to `workspace-write`.
+- [x] Mode switching does not require restarting Pi or running `/reload`.
+- [x] The displayed Guard status remains explicit when switching modes and still states that scope is limited to agent tools only.
 
 ## Blocked by
 
 - `01-bootstrap-pi-guard-config-status-and-init-flow.md`
+
+## Comments
+
+- Implemented in `.pi/extensions/pi-guard/`.
+- Covered by `npm test` in `.pi/extensions/pi-guard/`.
