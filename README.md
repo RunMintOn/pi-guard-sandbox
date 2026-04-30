@@ -1,4 +1,7 @@
-> Two rounds of real-world testing — **all passed**. Routine bash, file I/O, and git operations feel seamless. Out-of-bounds writes, dangerous commands, and sensitive reads are blocked on contact.
+>[!tip] Two rounds of real-world testing — **all passed**. Routine bash, file I/O, and git operations feel seamless. Out-of-bounds writes, dangerous commands, and sensitive reads are blocked on contact.
+
+<img src="image-1.png" width="500" />
+<img src="image.png" width="500" />
 
 **Pi Guard** gives your Agent an OS-level **write-boundary shield**. No regex guesswork. No approval fatigue. It knows when to stay out of your way and when to step in front of the bullet.
 
@@ -9,7 +12,7 @@
 
 ---
 
-[中文](README.Zh.md)
+[**中文文档请点击这里**](README.Zh.md)
 
 ---
 
