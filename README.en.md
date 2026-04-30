@@ -1,7 +1,3 @@
-# Pi Guard
-
-[中文](README.md)
-
 > Two rounds of real-world testing — **all passed**. Routine bash, file I/O, and git operations feel seamless. Out-of-bounds writes, dangerous commands, and sensitive reads are blocked on contact.
 
 **Pi Guard** gives your Agent an OS-level **write-boundary shield**. No regex guesswork. No approval fatigue. It knows when to stay out of your way and when to step in front of the bullet.
@@ -10,6 +6,10 @@
 - 🪶 **Transparent**: won't interrupt your flow — only blocks what actually crosses the line
 - 🛡️ **Hardened**: bash runs in a real sandbox, not string-matching theater
 - 🎯 **Focused**: two modes — `read-only` and `workspace-write` — pick one and stop overthinking
+
+---
+
+[中文](README.md)
 
 ---
 
