@@ -1,6 +1,6 @@
 # Pi Guard v0.1
 
-**Pi Guard** 是一个 Pi coding agent 的项目级扩展。为 Agent 发出的文件读写和 bash 命令加上**写边界保护**：防止越界修改、拦截危险命令，同时尽量保留 Agent 的正常工作效率。
+**Pi Guard** 是一个 Pi coding agent 的扩展。为 Agent 发出的文件读写和 bash 命令加上**写边界保护**：防止越界修改、拦截危险命令，同时尽量保留 Agent 的正常工作效率。
 
 ---
 
@@ -14,13 +14,22 @@
 | `socat` | 沙箱网络代理 | `sudo apt install socat` |
 | `rg` | 文件扫描 | `sudo apt install ripgrep` |
 
-### 项目依赖
+### 安装扩展
+
+**项目级**（只对当前项目生效）：
 
 ```bash
 cd .pi/extensions/pi-guard && npm install
 ```
 
-> 发布到 npm 后可直接 `pi install npm:pi-guard`。
+**全局**（对所有项目生效）：
+
+```bash
+cp -r .pi/extensions/pi-guard ~/.pi/agent/extensions/pi-guard
+cd ~/.pi/agent/extensions/pi-guard && npm install
+```
+
+> 发布到 npm 后可直接 `pi install npm:pi-guard`。Pi 自动发现 `.pi/extensions/`（项目级）和 `~/.pi/agent/extensions/`（全局）下的扩展。
 
 ---
 
