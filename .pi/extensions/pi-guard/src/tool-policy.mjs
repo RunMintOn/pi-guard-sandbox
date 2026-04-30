@@ -74,7 +74,7 @@ export async function evaluateToolCall({ cwd, config, statusKind, toolName, inpu
   }
 
   if (config.mode === "readonly") {
-    return makeDecision({ status: "block", reason: `${toolName} is denied in readonly mode.` });
+    return makeDecision({ status: "block", reason: `${toolName} is denied in read-only mode.` });
   }
 
   if (relativePath) {

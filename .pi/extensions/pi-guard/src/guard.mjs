@@ -5,12 +5,18 @@ import { buildSandboxRuntimeConfig } from "./sandbox-config.mjs";
 import { evaluateToolCall } from "./tool-policy.mjs";
 import { getWorkspaceRoot, normalizeSensitivePathPattern } from "./path-utils.mjs";
 
+const DISPLAY_MODES = { readonly: "read-only" };
+
+export function displayMode(mode) {
+  return DISPLAY_MODES[mode] ?? mode ?? "(none)";
+}
+
 export function formatGuardStatus(status) {
   const scope = "scope: agent tools only";
   if (status.kind === "uninitialized") return `Guard: uninitialized · ${scope}`;
   if (status.kind === "invalid-config") return `Guard: invalid-config · ${scope}`;
-  if (status.kind === "sandbox-unavailable") return `Guard: sandbox-unavailable (${status.mode}) · ${scope}`;
-  return `Guard: ${status.mode} · ${scope}`;
+  if (status.kind === "sandbox-unavailable") return `Guard: sandbox-unavailable (${displayMode(status.mode)}) · ${scope}`;
+  return `Guard: ${displayMode(status.mode)} · ${scope}`;
 }
 
 function resolveSensitiveMaskPaths(patterns) {

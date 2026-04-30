@@ -39,7 +39,7 @@ test("readonly rejects write and edit without approval", async () => {
 
   assert.equal(writeDecision.status, "block");
   assert.equal(editDecision.status, "block");
-  assert.match(writeDecision.reason, /readonly/);
+  assert.match(writeDecision.reason, /read-only/);
 });
 
 test("workspace-write allows local write and approval-gates external write", async () => {

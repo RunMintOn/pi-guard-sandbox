@@ -1,6 +1,6 @@
 import type { ExtensionAPI } from "@mariozechner/pi-coding-agent";
 import { createBashTool, createLocalBashOperations } from "@mariozechner/pi-coding-agent";
-import { createGuardController } from "./src/guard.mjs";
+import { createGuardController, displayMode } from "./src/guard.mjs";
 import { createRuntimeSandboxAdapter } from "./src/runtime-sandbox.mjs";
 
 export default async function (pi: ExtensionAPI) {
@@ -95,7 +95,7 @@ export default async function (pi: ExtensionAPI) {
 function renderStatus(status: any) {
   const lines = [
     `Status: ${status.kind}`,
-    `Mode: ${status.mode ?? "(none)"}`,
+    `Mode: ${displayMode(status.mode)}`,
     `Guard active: ${status.guardActive ? "yes" : "no"}`,
     `Sandbox active: ${status.sandboxActive ? "yes" : "no"}`,
     `Config: ${status.configPath}`,
