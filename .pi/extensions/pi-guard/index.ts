@@ -60,7 +60,7 @@ export default async function (pi: ExtensionAPI) {
   });
 
   pi.registerCommand("guard", {
-    description: "/guard [init|read-only|workspace-write] — Show or switch Guard mode",
+    description: "/guard — Show status, or [i|r|w|init|read-only|workspace-write]",
     handler: async (args, ctx) => {
       try {
         const command = String(args ?? "").trim();
@@ -70,22 +70,23 @@ export default async function (pi: ExtensionAPI) {
           return;
         }
 
-        if (command === "init") {
+        if (command === "i" || command === "init") {
           const result = await guard.initializeConfig();
           ctx.ui.notify(result.created ? `Initialized ${result.path}` : `Guard config already exists at ${result.path}`, result.created ? "success" : "warning");
           updateStatus(ctx);
           return;
         }
 
-        if (command === "readonly" || command === "read-only" || command === "workspace-write") {
-          const mode = command === "read-only" ? "readonly" : command;
-          const status = await guard.setMode(mode);
-          ctx.ui.notify(`Guard mode set to read-only`, "success");
+        const modeAliases = { r: "readonly", "read-only": "readonly", readonly: "readonly", w: "workspace-write", "workspace-write": "workspace-write" };
+        const mode = modeAliases[command];
+        if (mode) {
+          await guard.setMode(mode);
+          ctx.ui.notify(`Guard mode set to ${mode === "readonly" ? "read-only" : mode}`, "success");
           updateStatus(ctx);
           return;
         }
 
-        ctx.ui.notify("Usage: /guard [init|read-only|workspace-write]", "warning");
+        ctx.ui.notify("Usage: /guard — status, or [i|r|w|init|read-only|workspace-write]", "warning");
       } catch (error) {
         ctx.ui.notify(error instanceof Error ? error.message : String(error), "error");
       }
