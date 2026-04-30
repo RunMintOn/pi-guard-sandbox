@@ -1,4 +1,6 @@
-# Pi Guard v0.1
+# Pi Guard
+
+[English](README.en.md)
 
 > 两轮真实环境测试 **全部通过**：日常 bash、文件读写、git 操作丝滑无感；越界写入、危险命令、敏感读取一击即拦。
 
