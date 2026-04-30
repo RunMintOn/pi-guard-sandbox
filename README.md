@@ -46,7 +46,23 @@ cd .pi/extensions/pi-guard && npm install
 
 ---
 
-## 2. 快速开始
+## 2. Guard 在你的项目里留下了什么
+
+安装 Guard 之后，你的项目里会多出这些东西。了解它们，免得困惑。
+
+| 项目 | 说明 |
+|------|------|
+| `.pi/pi-guard.json` | `init` 时创建，Guard 全部配置 |
+| footer 状态行 | Pi 底部持续显示当前模式 |
+| bash 沙箱 | 所有 Agent bash 命令改为沙箱执行，不在宿主机直跑 |
+| `vendor/` 目录 | ~1.8MB，沙箱运行时（fork 自 `@anthropic-ai/sandbox-runtime`） |
+| `.pi/extensions/pi-guard/` | 扩展代码本身 |
+
+> 删除 `.pi/pi-guard.json` 后执行 `/reload` 即可停用 Guard。
+
+---
+
+## 3. 快速开始
 
 在项目目录启动 Pi，然后：
 
@@ -60,7 +76,7 @@ cd .pi/extensions/pi-guard && npm install
 
 ---
 
-## 3. 命令参考
+## 4. 命令参考
 
 | 命令 | 简写 | 作用 |
 |------|------|------|
@@ -71,7 +87,7 @@ cd .pi/extensions/pi-guard && npm install
 
 ---
 
-## 4. 模式说明
+## 5. 模式说明
 
 | | read-only | workspace-write |
 |---|---|---|
@@ -94,9 +110,21 @@ cd .pi/extensions/pi-guard && npm install
 
 ---
 
-## 5. 配置文件 `.pi/pi-guard.json`
+## 6. 故障排查
+
+| 状态 | 原因 | 处理 |
+|------|------|------|
+| `Guard: uninitialized` | 未初始化 | 执行 `/guard i` |
+| `Guard: invalid-config` | JSON 格式错误 | 检查 `.pi/pi-guard.json` 语法，修复后 `/reload` |
+| `Guard: sandbox-unavailable` | 系统依赖缺失或 npm 未安装 | 执行第 1 节安装步骤，检查 `bwrap`、`socat`、`rg` |
+
+---
+
+## 7. 配置文件 `.pi/pi-guard.json`
 
 `/guard init` 会在项目根目录生成这个文件，你也可以手动编辑（修改后需 `/reload` 生效）。
+
+### 完整示例
 
 ```json
 {
@@ -148,8 +176,6 @@ cd .pi/extensions/pi-guard && npm install
 
 ### 添加你自己的敏感路径
 
-比如不想让 Agent 读你的项目密钥文件：
-
 ```json
 "sensitiveReadDeny": [
   "~/.ssh",
@@ -174,27 +200,3 @@ cd .pi/extensions/pi-guard && npm install
 ```
 
 > `bashPolicy` 里的是**策略 ID**，不是正则。完整可用的 ID 列表见 `init` 生成的默认配置。
-
----
-
-## 6. Guard 在你的项目里留下了什么
-
-| 项目 | 说明 |
-|------|------|
-| `.pi/pi-guard.json` | `init` 时创建，Guard 全部配置 |
-| footer 状态行 | Pi 底部持续显示当前模式 |
-| bash 沙箱 | 所有 Agent bash 命令改为沙箱执行 |
-| `vendor/` 目录 | ~1.8MB，沙箱运行时（fork 自 `@anthropic-ai/sandbox-runtime`） |
-| `.pi/extensions/pi-guard/` | 扩展代码本身 |
-
-删除 `.pi/pi-guard.json` 后执行 `/reload` 即可停用 Guard。
-
----
-
-## 7. 故障排查
-
-| 状态 | 原因 | 处理 |
-|------|------|------|
-| `Guard: uninitialized` | 未初始化 | 执行 `/guard i` |
-| `Guard: invalid-config` | JSON 格式错误 | 检查 `.pi/pi-guard.json` 语法，修复后 `/reload` |
-| `Guard: sandbox-unavailable` | 系统依赖缺失或 npm 未安装 | 执行第 1 节安装步骤，检查 `bwrap`、`socat`、`rg` |
