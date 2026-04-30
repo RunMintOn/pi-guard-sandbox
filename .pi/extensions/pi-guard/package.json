@@ -11,6 +11,10 @@
     ]
   },
   "dependencies": {
-    "@anthropic-ai/sandbox-runtime": "^0.0.26"
+    "@pondwader/socks5-server": "^1.0.10",
+    "commander": "^12.1.0",
+    "lodash-es": "^4.17.23",
+    "shell-quote": "^1.8.3",
+    "zod": "^3.24.1"
   }
 }

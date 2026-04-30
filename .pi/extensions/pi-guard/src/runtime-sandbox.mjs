@@ -12,8 +12,10 @@ function getDependencyError(checkResult) {
   return null;
 }
 
+const VENDOR_PATH = new URL("../vendor/sandbox-runtime/index.js", import.meta.url).pathname;
+
 export async function createRuntimeSandboxAdapter(runtimeOverride) {
-  const runtime = runtimeOverride ?? await import("@anthropic-ai/sandbox-runtime");
+  const runtime = runtimeOverride ?? await import(VENDOR_PATH);
   const { SandboxManager } = runtime;
   let initialized = false;
 
