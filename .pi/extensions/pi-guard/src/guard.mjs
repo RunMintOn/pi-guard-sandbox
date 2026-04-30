@@ -12,11 +12,10 @@ export function displayMode(mode) {
 }
 
 export function formatGuardStatus(status) {
-  const scope = "scope: agent tools only";
-  if (status.kind === "uninitialized") return `Guard: uninitialized · ${scope}`;
-  if (status.kind === "invalid-config") return `Guard: invalid-config · ${scope}`;
-  if (status.kind === "sandbox-unavailable") return `Guard: sandbox-unavailable (${displayMode(status.mode)}) · ${scope}`;
-  return `Guard: ${displayMode(status.mode)} · ${scope}`;
+  if (status.kind === "uninitialized") return "Guard: uninitialized";
+  if (status.kind === "invalid-config") return "Guard: invalid-config";
+  if (status.kind === "sandbox-unavailable") return `Guard: sandbox-unavailable (${displayMode(status.mode)})`;
+  return `Guard: ${displayMode(status.mode)}`;
 }
 
 function resolveSensitiveMaskPaths(patterns) {
