@@ -12,6 +12,23 @@ function getDependencyError(checkResult) {
   return null;
 }
 
+function injectMaskArgs(bwrapCommand, extraMaskPaths) {
+  const lastDashDash = bwrapCommand.lastIndexOf(" -- ");
+  if (lastDashDash === -1) return bwrapCommand;
+  const prefix = bwrapCommand.slice(0, lastDashDash);
+  const suffix = bwrapCommand.slice(lastDashDash);
+  const maskArgs = [];
+  for (const { path: p, isDir } of extraMaskPaths) {
+    if (isDir) {
+      maskArgs.push("--tmpfs", p);
+    } else {
+      maskArgs.push("--ro-bind", "/dev/null", p);
+    }
+  }
+  if (maskArgs.length === 0) return bwrapCommand;
+  return prefix + " " + maskArgs.join(" ") + suffix;
+}
+
 const VENDOR_PATH = new URL("../vendor/sandbox-runtime/index.js", import.meta.url).pathname;
 
 export async function createRuntimeSandboxAdapter(runtimeOverride) {
@@ -32,8 +49,12 @@ export async function createRuntimeSandboxAdapter(runtimeOverride) {
         SandboxManager.updateConfig(config);
       }
     },
-    async wrap(command) {
-      return SandboxManager.wrapWithSandbox(command, undefined, undefined);
+    async wrap(command, extraMaskPaths = []) {
+      let wrapped = await SandboxManager.wrapWithSandbox(command, undefined, undefined);
+      if (extraMaskPaths.length > 0) {
+        wrapped = injectMaskArgs(wrapped, extraMaskPaths);
+      }
+      return wrapped;
     },
     async reset() {
       if (!initialized) return;

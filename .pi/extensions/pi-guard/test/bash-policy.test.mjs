@@ -16,11 +16,13 @@ function createSandbox() {
   return {
     applied: [],
     wrapped: [],
+    extraMaskCalls: [],
     async apply(config) {
       this.applied.push(config);
     },
-    async wrap(command) {
+    async wrap(command, extraMaskPaths) {
       this.wrapped.push(command);
+      this.extraMaskCalls.push(extraMaskPaths ?? []);
       return `wrapped:${command}`;
     },
     async reset() {},
@@ -89,6 +91,25 @@ test("bash preparation uses sandbox when guard is active and local mode when uni
   await uninitialized.refresh();
   const local = await uninitialized.prepareBash("echo hi");
   assert.equal(local.mode, "local");
+});
+
+test("prepareBash masks sensitive read paths in sandbox command", async () => {
+  const cwd = tempWorkspace();
+  const config = createDefaultConfig();
+  config.mode = "readonly";
+  config.sensitiveReadDeny = ["~/.ssh", "~/.npmrc"];
+  await writeConfig(cwd, config);
+  const sandbox = createSandbox();
+  const guard = createGuardController({ cwd, sandbox });
+  await guard.refresh();
+
+  await guard.prepareBash("echo hi");
+  const maskPaths = sandbox.extraMaskCalls[0];
+
+  assert.ok(maskPaths.some(({ path }) => path.endsWith(".ssh")), "ssh dir should be masked");
+  assert.ok(maskPaths.some(({ path }) => path.endsWith(".npmrc")), "npmrc file should be masked");
+  assert.ok(maskPaths.find(({ path }) => path.endsWith(".ssh")).isDir, "ssh is a directory");
+  assert.equal(maskPaths.find(({ path }) => path.endsWith(".npmrc")).isDir, false, "npmrc is a file");
 });
 
 test("sandbox-unavailable blocks bash execution preparation", async () => {

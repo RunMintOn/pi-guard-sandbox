@@ -1,8 +1,9 @@
 import { readFile, writeFile } from "node:fs/promises";
+import { statSync } from "node:fs";
 import { getGuardConfigPath, initConfig, loadConfig, serializeConfig, writeConfig } from "./config.mjs";
 import { buildSandboxRuntimeConfig } from "./sandbox-config.mjs";
 import { evaluateToolCall } from "./tool-policy.mjs";
-import { getWorkspaceRoot } from "./path-utils.mjs";
+import { getWorkspaceRoot, normalizeSensitivePathPattern } from "./path-utils.mjs";
 
 export function formatGuardStatus(status) {
   const scope = "scope: agent tools only";
@@ -10,6 +11,20 @@ export function formatGuardStatus(status) {
   if (status.kind === "invalid-config") return `Guard: invalid-config · ${scope}`;
   if (status.kind === "sandbox-unavailable") return `Guard: sandbox-unavailable (${status.mode}) · ${scope}`;
   return `Guard: ${status.mode} · ${scope}`;
+}
+
+function resolveSensitiveMaskPaths(patterns) {
+  const result = [];
+  for (const pattern of patterns) {
+    const normalized = normalizeSensitivePathPattern(pattern);
+    try {
+      const s = statSync(normalized);
+      result.push({ path: normalized, isDir: s.isDirectory() });
+    } catch {
+      // doesn't exist, skip
+    }
+  }
+  return result;
 }
 
 export function createGuardController({ cwd, sandbox, fs = { readFile, writeFile } } = {}) {
@@ -116,7 +131,8 @@ export function createGuardController({ cwd, sandbox, fs = { readFile, writeFile
     if (!state.sandboxActive) {
       throw new Error(state.error || "Guard bash sandbox is unavailable.");
     }
-    const wrapped = await sandbox.wrap(command);
+    const maskPaths = resolveSensitiveMaskPaths(state.config.sensitiveReadDeny);
+    const wrapped = await sandbox.wrap(command, maskPaths);
     return {
       mode: "sandbox",
       command: wrapped,
