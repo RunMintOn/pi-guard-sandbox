@@ -1,5 +1,4 @@
 import { join } from "node:path";
-import { DEFAULT_NETWORK_ALLOWLIST } from "./constants.mjs";
 import { getWorkspaceRoot, normalizeSensitivePathPattern } from "./path-utils.mjs";
 
 export function buildSandboxRuntimeConfig({ cwd, config }) {
@@ -28,8 +27,4 @@ export function buildSandboxRuntimeConfig({ cwd, config }) {
       command: "rg",
     },
   };
-}
-
-export function getSandboxHome() {
-  return join("/tmp", "pi-guard-home");
 }

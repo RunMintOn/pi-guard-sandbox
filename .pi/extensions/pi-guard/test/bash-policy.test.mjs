@@ -125,3 +125,38 @@ test("sandbox-unavailable blocks bash execution preparation", async () => {
 
   await assert.rejects(() => guard.prepareBash("echo hi"), /socat missing/);
 });
+
+test("prepareBash inherits host environment variables", async () => {
+  const cwd = tempWorkspace();
+  const config = createDefaultConfig();
+  await writeConfig(cwd, config);
+  const sandbox = createSandbox();
+  const guard = createGuardController({ cwd, sandbox });
+  await guard.refresh();
+
+  process.env.PI_GUARD_TEST_VAR = "hello-from-host";
+  try {
+    const prepared = await guard.prepareBash("echo hi");
+    assert.equal(prepared.env.PI_GUARD_TEST_VAR, "hello-from-host");
+    assert.equal(prepared.env.HOME, process.env.HOME);
+  } finally {
+    delete process.env.PI_GUARD_TEST_VAR;
+  }
+});
+
+test("prepareBash uses real HOME and overrides cache dirs", async () => {
+  const cwd = tempWorkspace();
+  const config = createDefaultConfig();
+  await writeConfig(cwd, config);
+  const sandbox = createSandbox();
+  const guard = createGuardController({ cwd, sandbox });
+  await guard.refresh();
+
+  const prepared = await guard.prepareBash("echo hi");
+
+  assert.equal(prepared.env.HOME, process.env.HOME, "HOME should be real home");
+  assert.equal(prepared.env.TMPDIR, "/tmp");
+  assert.equal(prepared.env.XDG_CACHE_HOME, "/tmp/.cache");
+  assert.equal(prepared.env.npm_config_cache, "/tmp/.npm");
+  assert.equal(prepared.env.PIP_CACHE_DIR, "/tmp/.pip-cache");
+});

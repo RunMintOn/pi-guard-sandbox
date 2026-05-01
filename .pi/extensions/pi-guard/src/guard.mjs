@@ -157,7 +157,7 @@ export function createGuardController({ cwd, sandbox, fs = { readFile, writeFile
       mode: "sandbox",
       command: wrapped,
       env: {
-        HOME: "/tmp/pi-guard-home",
+        ...process.env,
         TMPDIR: "/tmp",
         XDG_CACHE_HOME: "/tmp/.cache",
         npm_config_cache: "/tmp/.npm",
