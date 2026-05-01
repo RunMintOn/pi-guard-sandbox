@@ -60,7 +60,7 @@ export default async function (pi: ExtensionAPI) {
   });
 
   pi.registerCommand("guard", {
-    description: "/guard — Show status, or [i|r|w|init|read-only|workspace-write]",
+    description: "/guard — Show status, or [i|r|w|init|read-only|workspace-write|non|noff|network-on|network-off]",
     handler: async (args, ctx) => {
       try {
         const command = String(args ?? "").trim();
@@ -86,6 +86,15 @@ export default async function (pi: ExtensionAPI) {
           return;
         }
 
+        const netAliases: Record<string, "open" | "blocked"> = { non: "open", "network-on": "open", noff: "blocked", "network-off": "blocked" };
+        const network = netAliases[command];
+        if (network) {
+          await guard.setNetwork(network);
+          ctx.ui.notify(`Network ${network}`, "success");
+          updateStatus(ctx);
+          return;
+        }
+
         ctx.ui.notify("Usage: /guard — status, or [i|r|w|init|read-only|workspace-write]", "warning");
       } catch (error) {
         ctx.ui.notify(error instanceof Error ? error.message : String(error), "error");
@@ -98,6 +107,7 @@ function renderStatus(status: any) {
   const lines = [
     `Status: ${status.kind}`,
     `Mode: ${displayMode(status.mode)}`,
+    `Network: ${status.network ?? "open"}`,
     `Guard active: ${status.guardActive ? "yes" : "no"}`,
     `Sandbox active: ${status.sandboxActive ? "yes" : "no"}`,
     `Config: ${status.configPath}`,

@@ -8,9 +8,11 @@ export function buildSandboxRuntimeConfig({ cwd, config }) {
   const denyWrite = [configPath];
   const allowWrite = config.mode === "readonly" ? ["/tmp"] : [workspaceRoot, "/tmp"];
 
+  const networkBlocked = config.network === "blocked";
+
   return {
     network: {
-      allowedDomains: [...DEFAULT_NETWORK_ALLOWLIST],
+      allowedDomains: networkBlocked ? [] : undefined,
       deniedDomains: [],
       allowAllUnixSockets: true,
     },

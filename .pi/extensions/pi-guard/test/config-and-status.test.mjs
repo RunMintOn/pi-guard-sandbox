@@ -95,6 +95,119 @@ test("mode switching persists to config and updates status immediately", async (
   assert.equal(sandbox.applied.at(-1).filesystem.allowWrite.includes("/tmp"), true);
 });
 
+test("init creates default config with network open", async () => {
+  const cwd = tempWorkspace();
+  const sandbox = createSandbox();
+  const guard = createGuardController({ cwd, sandbox });
+
+  const result = await guard.initializeConfig();
+  const saved = JSON.parse(readFileSync(join(cwd, ".pi", "pi-guard.json"), "utf8"));
+
+  assert.equal(result.created, true);
+  assert.equal(saved.network, "open");
+});
+
+test("network blocked gives sandbox empty allowedDomains", async () => {
+  const cwd = tempWorkspace();
+  const sandbox = createSandbox();
+  const guard = createGuardController({ cwd, sandbox });
+
+  // init with default (network: open), then write a config with network: blocked
+  await guard.initializeConfig();
+  writeProjectFile(cwd, ".pi/pi-guard.json", JSON.stringify({ mode: "workspace-write", network: "blocked", sensitiveReadDeny: [], protectedPaths: { block: [], approval: [] }, bashPolicy: { directBlock: [], requireApproval: [] } }));
+  await guard.refresh();
+
+  const lastConfig = sandbox.applied.at(-1);
+  assert.equal(lastConfig.network.allowedDomains.length, 0);
+});
+
+test("network open gives sandbox undefined allowedDomains", async () => {
+  const cwd = tempWorkspace();
+  const sandbox = createSandbox();
+  const guard = createGuardController({ cwd, sandbox });
+
+  await guard.initializeConfig();
+
+  // default is network: open
+  const lastConfig = sandbox.applied.at(-1);
+  assert.equal(lastConfig.network.allowedDomains, undefined);
+});
+
+test("setNetwork persists blocked to config and refreshes sandbox", async () => {
+  const cwd = tempWorkspace();
+  const sandbox = createSandbox();
+  const guard = createGuardController({ cwd, sandbox });
+
+  await guard.initializeConfig();
+  // switch to blocked
+  const status = await guard.setNetwork("blocked");
+  const saved = JSON.parse(readFileSync(join(cwd, ".pi", "pi-guard.json"), "utf8"));
+
+  assert.equal(status.kind, "workspace-write");
+  assert.equal(saved.network, "blocked");
+  assert.equal(sandbox.applied.at(-1).network.allowedDomains.length, 0);
+});
+
+test("setNetwork open persists to config and refreshes sandbox", async () => {
+  const cwd = tempWorkspace();
+  const sandbox = createSandbox();
+  const guard = createGuardController({ cwd, sandbox });
+
+  // start with blocked
+  writeProjectFile(cwd, ".pi/pi-guard.json", JSON.stringify({ mode: "workspace-write", network: "blocked", sensitiveReadDeny: [], protectedPaths: { block: [], approval: [] }, bashPolicy: { directBlock: [], requireApproval: [] } }));
+  await guard.refresh();
+
+  const status = await guard.setNetwork("open");
+  const saved = JSON.parse(readFileSync(join(cwd, ".pi", "pi-guard.json"), "utf8"));
+
+  assert.equal(saved.network, "open");
+  assert.equal(sandbox.applied.at(-1).network.allowedDomains, undefined);
+});
+
+test("status text includes network state when active", async () => {
+  const cwd = tempWorkspace();
+  const sandbox = createSandbox();
+  const guard = createGuardController({ cwd, sandbox });
+
+  await guard.initializeConfig();
+  // default: workspace-write + network open
+  assert.match(guard.getStatus().text, /Guard: workspace-write · network: open/);
+
+  await guard.setNetwork("blocked");
+  assert.match(guard.getStatus().text, /Guard: workspace-write · network: blocked/);
+
+  await guard.setMode("readonly");
+  assert.match(guard.getStatus().text, /Guard: read-only · network: blocked/);
+});
+
+test("invalid network value becomes invalid-config", async () => {
+  const cwd = tempWorkspace();
+  const sandbox = createSandbox();
+  const guard = createGuardController({ cwd, sandbox });
+  writeProjectFile(cwd, ".pi/pi-guard.json", JSON.stringify({ mode: "workspace-write", network: "partial", sensitiveReadDeny: [], protectedPaths: { block: [], approval: [] }, bashPolicy: { directBlock: [], requireApproval: [] } }));
+
+  await guard.refresh();
+  const status = guard.getStatus();
+
+  assert.equal(status.kind, "invalid-config");
+  assert.match(status.error, /network/);
+});
+
+test("mode switch preserves network setting", async () => {
+  const cwd = tempWorkspace();
+  const sandbox = createSandbox();
+  const guard = createGuardController({ cwd, sandbox });
+
+  await guard.initializeConfig();
+  await guard.setNetwork("blocked");
+  await guard.setMode("readonly");
+  const saved = JSON.parse(readFileSync(join(cwd, ".pi", "pi-guard.json"), "utf8"));
+
+  assert.equal(saved.mode, "readonly");
+  assert.equal(saved.network, "blocked");
+  assert.match(guard.getStatus().text, /Guard: read-only · network: blocked/);
+});
+
 test("sandbox failure becomes sandbox-unavailable without losing validated config", async () => {
   const cwd = tempWorkspace();
   const sandbox = createSandbox();

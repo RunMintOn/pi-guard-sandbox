@@ -24,6 +24,9 @@ export function validateConfig(input) {
   if (value.mode !== "readonly" && value.mode !== "workspace-write") {
     errors.push('"mode" must be "readonly" or "workspace-write".');
   }
+  if (value.network !== undefined && value.network !== "open" && value.network !== "blocked") {
+    errors.push('"network" must be "open" or "blocked".');
+  }
   if (!isStringArray(value.sensitiveReadDeny)) {
     errors.push('"sensitiveReadDeny" must be an array of strings.');
   }

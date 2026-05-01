@@ -15,7 +15,8 @@ export function formatGuardStatus(status) {
   if (status.kind === "uninitialized") return "Guard: uninitialized";
   if (status.kind === "invalid-config") return "Guard: invalid-config";
   if (status.kind === "sandbox-unavailable") return `Guard: sandbox-unavailable (${displayMode(status.mode)})`;
-  return `Guard: ${displayMode(status.mode)}`;
+  const network = status.config?.network ?? "open";
+  return `Guard: ${displayMode(status.mode)} · network: ${network}`;
 }
 
 function resolveSensitiveMaskPaths(patterns) {
@@ -87,6 +88,7 @@ export function createGuardController({ cwd, sandbox, fs = { readFile, writeFile
     return {
       kind: state.kind,
       mode: state.mode,
+      network: state.config?.network,
       config: state.config,
       configPath: state.configPath,
       workspaceRoot: state.workspaceRoot,
@@ -112,6 +114,19 @@ export function createGuardController({ cwd, sandbox, fs = { readFile, writeFile
       throw new Error("Guard is not initialized.");
     }
     const next = { ...state.config, mode };
+    await writeConfig(cwd, next);
+    await refresh();
+    return getStatus();
+  }
+
+  async function setNetwork(value) {
+    if (value !== "open" && value !== "blocked") {
+      throw new Error(`Unsupported network value: ${value}`);
+    }
+    if (!state.config) {
+      throw new Error("Guard is not initialized.");
+    }
+    const next = { ...state.config, network: value };
     await writeConfig(cwd, next);
     await refresh();
     return getStatus();
@@ -156,6 +171,7 @@ export function createGuardController({ cwd, sandbox, fs = { readFile, writeFile
     getStatus,
     initializeConfig,
     setMode,
+    setNetwork,
     handleToolCall,
     prepareBash,
   };

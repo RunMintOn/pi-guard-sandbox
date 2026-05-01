@@ -60,6 +60,7 @@ export const DEFAULT_NETWORK_ALLOWLIST = [
 export function createDefaultConfig() {
   return {
     mode: "workspace-write",
+    network: "open",
     sensitiveReadDeny: [...DEFAULT_SENSITIVE_READ_DENY],
     protectedPaths: {
       block: [...DEFAULT_PROTECTED_PATHS.block],
