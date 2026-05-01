@@ -1,8 +1,10 @@
 {
   "name": "pi-guard-sandbox",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Write-boundary protection for Pi coding agent — sandboxed bash, file tool approval, dangerous command blocking",
-  "keywords": ["pi-package"],
+  "keywords": [
+    "pi-package"
+  ],
   "license": "MIT",
   "type": "module",
   "scripts": {
