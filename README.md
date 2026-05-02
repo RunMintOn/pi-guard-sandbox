@@ -19,6 +19,14 @@
 
 ---
 
+## Changelog
+
+- **0.2.1** — Sandbox now inherits host environment variables and uses the real `HOME`. Fixes tools that read config files or API keys from `~/.` paths (e.g. Tavily).
+- **0.2.0** — Network toggle: `/guard non` / `/guard noff` to allow or block all outbound network. Default open. Footer shows `· network: open|blocked`.
+- **0.1.0** — Initial release: write-boundary protection, read-only / workspace-write modes, sandboxed bash, dangerous command blocking.
+
+---
+
 ## 1. Installation
 
 ### System dependencies
@@ -92,6 +100,8 @@ Guard takes effect immediately after initialization. The footer shows the curren
 | `/guard init` | `/guard i` | Create `.pi/pi-guard.json` and enable Guard |
 | `/guard read-only` | `/guard r` | Switch to read-only |
 | `/guard workspace-write` | `/guard w` | Switch to workspace-write |
+| `/guard network on` | `/guard non` | Allow all outbound network (default) |
+| `/guard network off` | `/guard noff` | Block all outbound network |
 
 ---
 
@@ -137,6 +147,7 @@ Guard takes effect immediately after initialization. The footer shows the curren
 ```json
 {
   "mode": "workspace-write",
+  "network": "open",
 
   "sensitiveReadDeny": [
     "~/.ssh",
@@ -176,6 +187,7 @@ Guard takes effect immediately after initialization. The footer shows the curren
 | Field | Description |
 |-------|-------------|
 | `mode` | `"readonly"` or `"workspace-write"`. Switch with `/guard r` / `/guard w` |
+| `network` | `"open"` (outbound allowed) or `"blocked"` (all outbound denied). Switch with `/guard non` / `/guard noff` |
 | `sensitiveReadDeny` | Paths blocked from all Agent reads. Supports `~` and globs |
 | `protectedPaths.block` | Paths where `write` / `edit` are rejected outright |
 | `protectedPaths.approval` | Paths where `write` / `edit` trigger an approval prompt |
