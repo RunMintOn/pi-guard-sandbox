@@ -16,6 +16,14 @@
 
 ---
 
+## Changelog
+
+- **0.2.1** — 沙箱继承宿主机环境变量，使用真实 `HOME`。修复 Tavily 等依赖 `~/.` 配置文件的工具。
+- **0.2.0** — 新增网络开关：`/guard non` / `/guard noff` 打开或阻断全部外网连接。默认开放。footer 显示 `· network: open|blocked`。
+- **0.1.0** — 初始发布：写边界保护，read-only / workspace-write 双模式，bash 沙箱，危险命令拦截。
+
+---
+
 ## 1. 安装
 
 ### 系统依赖
@@ -89,6 +97,8 @@ cd .pi/extensions/pi-guard && npm install
 | `/guard init` | `/guard i` | 创建 `.pi/pi-guard.json` 并启用 Guard |
 | `/guard read-only` | `/guard r` | 切换到 read-only 模式 |
 | `/guard workspace-write` | `/guard w` | 切换到 workspace-write 模式 |
+| `/guard network on` | `/guard non` | 开放全部外网连接（默认） |
+| `/guard network off` | `/guard noff` | 阻断全部外网连接 |
 
 ---
 
@@ -134,6 +144,7 @@ cd .pi/extensions/pi-guard && npm install
 ```json
 {
   "mode": "workspace-write",
+  "network": "open",
 
   "sensitiveReadDeny": [
     "~/.ssh",
@@ -173,6 +184,7 @@ cd .pi/extensions/pi-guard && npm install
 | 字段 | 说明 |
 |------|------|
 | `mode` | `"readonly"` 或 `"workspace-write"`。`/guard r` / `/guard w` 可直接切换 |
+| `network` | `"open"`（允许外网）或 `"blocked"`（阻断全部外网）。`/guard non` / `/guard noff` 切换 |
 | `sensitiveReadDeny` | 禁止读取的路径，支持 `~` 和 glob。对所有 Agent 读操作生效 |
 | `protectedPaths.block` | `write` / `edit` 直接拒绝的路径 |
 | `protectedPaths.approval` | `write` / `edit` 弹审批的路径 |
