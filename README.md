@@ -103,6 +103,8 @@ Guard takes effect immediately after initialization. The footer shows the curren
 | `/guard network on` | `/guard non` | Allow all outbound network (default) |
 | `/guard network off` | `/guard noff` | Block all outbound network |
 
+> **Note:** Even with network open, `ping` (ICMP) is unavailable inside the sandbox. Bubblewrap drops `CAP_NET_RAW` by default. HTTP/HTTPS (curl, wget, git, etc.) work normally.
+
 ---
 
 ## 5. Mode comparison

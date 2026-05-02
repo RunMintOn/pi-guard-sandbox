@@ -100,6 +100,8 @@ cd .pi/extensions/pi-guard && npm install
 | `/guard network on` | `/guard non` | 开放全部外网连接（默认） |
 | `/guard network off` | `/guard noff` | 阻断全部外网连接 |
 
+> **注意：** 即使网络开放，沙箱内 `ping`（ICMP）也不可用。Bubblewrap 默认剥离 `CAP_NET_RAW`。HTTP/HTTPS（curl、wget、git 等）正常工作。
+
 ---
 
 ## 5. 模式说明
