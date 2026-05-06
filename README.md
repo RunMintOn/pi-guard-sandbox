@@ -1,3 +1,5 @@
+<img src="1image.png" width="720" />
+
 > [!TIP]
 > Two rounds of real-world testing — **all passed**. Routine bash, file I/O, and git operations feel seamless. Out-of-bounds writes, dangerous commands, and sensitive reads are blocked on contact.
 
@@ -6,12 +8,13 @@
 <img src="image-1.png" width="500" />
 <img src="image.png" width="500" />
 
-**Pi Guard** gives your Agent an OS-level **write-boundary shield**. No regex guesswork. No approval fatigue. It knows when to stay out of your way and when to step in front of the bullet.
+**Pi Guard** is a high-agency, OS-level sandbox for Pi. Let your Agent work freely where it should, block it where it shouldn’t — with real boundary enforcement, interactive permission prompts, and no heavy workflow overhead.
 
-- 🧠 **Smart**: full freedom inside the workspace, dead stop at the boundary
-- 🪶 **Transparent**: won't interrupt your flow — only blocks what actually crosses the line
+- 🧠 **High-agency**: full freedom inside the workspace, hard stops only at the boundary
+- 🪶 **Clean**: minimal setup, intuitive config, low-friction daily use
 - 🛡️ **Hardened**: bash runs in a real sandbox, not string-matching theater
-- 🎯 **Focused**: two modes — `read-only` and `workspace-write` — pick one and stop overthinking
+- 🤝 **Composable**: coexists with `pi-tool-display` and other bash-overriding extensions
+- 🎯 **One package, done**: no need to stitch together a stack of guardrail tools
 
 ---
 

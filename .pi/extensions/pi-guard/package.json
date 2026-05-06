@@ -1,19 +1,30 @@
 {
   "name": "pi-guard-sandbox",
-  "version": "0.2.1",
-  "description": "Write-boundary protection for Pi coding agent — sandboxed bash, file tool approval, dangerous command blocking",
+  "version": "0.2.4",
+  "description": "A lightweight OS-level guard for Pi: agents stay useful, sensitive paths stay blocked, and writes stay inside the workspace you allow. No container overhead. No workflow drama.",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RunMintOn/pi-gaurd-sandbox.git"
+  },
+  "homepage": "https://github.com/RunMintOn/pi-gaurd-sandbox#readme",
+  "bugs": {
+    "url": "https://github.com/RunMintOn/pi-gaurd-sandbox/issues"
+  },
   "keywords": [
     "pi-package"
   ],
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "test": "node --test ./test/*.test.mjs"
+    "test": "node --test ./test/*.test.mjs",
+    "sync:readme": "node ./scripts/sync-readme.mjs",
+    "prepack": "npm run sync:readme"
   },
   "pi": {
     "extensions": [
       "./index.ts"
-    ]
+    ],
+    "image": "https://raw.githubusercontent.com/RunMintOn/pi-gaurd-sandbox/main/1image.png"
   },
   "dependencies": {
     "@pondwader/socks5-server": "^1.0.10",
