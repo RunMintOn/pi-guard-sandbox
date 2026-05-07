@@ -46,6 +46,9 @@
 
 ```bash
 pi install npm:pi-guard-sandbox      # global — all projects
+```
+
+```bash
 pi install -l npm:pi-guard-sandbox   # project-local only
 ```
 

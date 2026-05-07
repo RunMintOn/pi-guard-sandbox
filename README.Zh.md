@@ -40,6 +40,9 @@
 
 ```bash
 pi install npm:pi-guard-sandbox      # 全局安装，所有项目生效
+```
+
+```bash
 pi install -l npm:pi-guard-sandbox   # 仅当前项目生效
 ```
 
