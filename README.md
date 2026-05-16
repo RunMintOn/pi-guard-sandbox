@@ -1,8 +1,23 @@
 <img src="1image.png" width="720" />
 
+<p align="left">
+  <a href="https://www.npmjs.com/package/pi-guard-sandbox">
+    <img src="https://img.shields.io/npm/v/pi-guard-sandbox" alt="npm version" />
+  </a>
+  <a href="https://www.npmjs.com/package/pi-guard-sandbox">
+    <img src="https://img.shields.io/npm/dm/pi-guard-sandbox" alt="npm downloads" />
+  </a>
+  <a href="https://www.npmjs.com/package/pi-guard-sandbox">
+    <img src="https://img.shields.io/npm/dt/pi-guard-sandbox" alt="npm total downloads" />
+  </a>
+</p>
 > [!TIP]
 > Two rounds of real-world testing — **all passed**. Routine bash, file I/O, and git operations feel seamless. Out-of-bounds writes, dangerous commands, and sensitive reads are blocked on contact.
 
+---
+[**中文文档**](README.Zh.md)
+
+---
 **Platform: Linux / WSL.** macOS may work but hasn't been tested. Windows is not supported.
 
 <img src="image-1.png" width="500" />
@@ -18,9 +33,7 @@
 
 ---
 
-[**中文文档请点击这里**](README.Zh.md)
 
----
 
 ## Changelog
 

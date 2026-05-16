@@ -1,3 +1,14 @@
+<p align="left">
+  <a href="https://www.npmjs.com/package/pi-guard-sandbox">
+    <img src="https://img.shields.io/npm/v/pi-guard-sandbox" alt="npm version" />
+  </a>
+  <a href="https://www.npmjs.com/package/pi-guard-sandbox">
+    <img src="https://img.shields.io/npm/dm/pi-guard-sandbox" alt="npm downloads" />
+  </a>
+  <a href="https://www.npmjs.com/package/pi-guard-sandbox">
+    <img src="https://img.shields.io/npm/dt/pi-guard-sandbox" alt="npm total downloads" />
+  </a>
+</p>
 > [!TIP]
 > 两轮真实环境测试 **全部通过**：日常 bash、文件读写、git 操作丝滑无感；越界写入、危险命令、敏感读取一击即拦。
 
