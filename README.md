@@ -11,7 +11,8 @@
     <img src="https://img.shields.io/npm/dt/pi-guard-sandbox" alt="npm total downloads" />
   </a>
 </p>
-> [!TIP]
+
+> [!TIP]  
 > Two rounds of real-world testing — **all passed**. Routine bash, file I/O, and git operations feel seamless. Out-of-bounds writes, dangerous commands, and sensitive reads are blocked on contact.
 
 ---
@@ -28,6 +29,7 @@
 - 🧠 **High-agency**: full freedom inside the workspace, hard stops only at the boundary
 - 🪶 **Clean**: minimal setup, intuitive config, low-friction daily use
 - 🛡️ **Hardened**: bash runs in a real sandbox, not string-matching theater
+- 🔍 **Optional DCG support**: use [Destructive Command Guard](https://github.com/Dicklesworthstone/destructive_command_guard) for richer Bash command-risk decisions
 - 🤝 **Composable**: coexists with `pi-tool-display` and other bash-overriding extensions
 - 🎯 **One package, done**: no need to stitch together a stack of guardrail tools
 

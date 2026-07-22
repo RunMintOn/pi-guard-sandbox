@@ -9,7 +9,8 @@
     <img src="https://img.shields.io/npm/dt/pi-guard-sandbox" alt="npm total downloads" />
   </a>
 </p>
-> [!TIP]
+
+> [!TIP]  
 > 两轮真实环境测试 **全部通过**：日常 bash、文件读写、git 操作丝滑无感；越界写入、危险命令、敏感读取一击即拦。
 
 **支持平台：Linux / WSL。** macOS 未测试，理论上可能可用。Windows 不支持。
@@ -19,6 +20,7 @@
 - 🧠 **聪明**：工作区内任意发挥，工作区外寸步难行
 - 🪶 **无感**：不打断你的正常编码流，只拦截真正越界的操作
 - 🛡️ **硬核**：bash 命令运行在真实 sandbox 里，不是字符串匹配
+- 🔍 **可选 DCG 支持**：可接入 [Destructive Command Guard](https://github.com/Dicklesworthstone/destructive_command_guard)，获得更完整的 Bash 命令风险判断
 - 🎯 **精准**：read-only 和 workspace-write 两个模式，选一个就不用再纠结
 
 ---
