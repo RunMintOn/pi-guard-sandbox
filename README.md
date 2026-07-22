@@ -69,15 +69,15 @@ After installation, enter your project and run `/guard i` to initialize.
 
 #### From this repo
 
-If you've cloned this repository, the extension is already at `.pi/extensions/pi-guard/`:
+If you've cloned this repository, the development extension is at `extensions/pi-guard/`. It is deliberately **not** under `.pi/extensions/`, so Pi started from the repository root does not auto-load development code:
 
 ```bash
-cd .pi/extensions/pi-guard && npm install
+cd extensions/pi-guard && npm install
 ```
 
-Start Pi, then run `/guard i`.
+Test it explicitly with Pi's extension flag, then run `/guard init`. Installed packages still use Pi's normal package/discovery paths (for example `~/.pi/agent/extensions/` or the package location chosen by `pi install`).
 
-> For a global install from this repo: copy `.pi/extensions/pi-guard/` to `~/.pi/agent/extensions/pi-guard/` and run `npm install` there.
+> For a global install from this repo: copy `extensions/pi-guard/` to `~/.pi/agent/extensions/pi-guard/` and run `npm install` there.
 
 ---
 
@@ -91,7 +91,7 @@ Know what you're getting into.
 | footer status line | Persistent mode indicator at the bottom of Pi |
 | sandboxed bash | All Agent bash commands run in a sandbox, not directly on the host |
 | `vendor/` directory | ~1.8 MB — sandbox runtime (forked from `@anthropic-ai/sandbox-runtime`) |
-| `.pi/extensions/pi-guard/` | The extension code itself |
+| `extensions/pi-guard/` | This repository's development source; it is not an auto-discovery path |
 
 > Delete `.pi/pi-guard.json` and run `/reload` to disable Guard.
 
@@ -102,9 +102,10 @@ Know what you're getting into.
 Start Pi in your project directory:
 
 ```
-/guard i        → initialize — creates config
-/guard r        → switch to read-only mode
-/guard w        → switch to workspace-write (default)
+/guard init              → initialize — creates config
+/guard read-only         → temporary read-only mode
+/guard sandbox off       → temporarily remove OS sandbox wrapping
+/guard dcg off           → temporarily use the built-in Bash policy
 ```
 
 Guard takes effect immediately after initialization. The footer shows the current mode.
@@ -115,12 +116,19 @@ Guard takes effect immediately after initialization. The footer shows the curren
 
 | Command | Shortcut | Purpose |
 |---------|----------|---------|
-| `/guard` | — | Show status and configuration |
+| `/guard status` | — | Show complete runtime status and configuration |
 | `/guard init` | `/guard i` | Create `.pi/pi-guard.json` and enable Guard |
+| `/guard on` / `/guard off` | — | Enable/disable all Guard enforcement for this Pi run |
+| `/guard sandbox on` / `off` | — | Enable/disable only OS sandbox wrapping for this Pi run |
+| `/guard dcg on` / `off` | — | Enable/disable optional DCG policy for this Pi run |
 | `/guard read-only` | `/guard r` | Switch to read-only |
 | `/guard workspace-write` | `/guard w` | Switch to workspace-write |
 | `/guard network on` | `/guard non` | Allow all outbound network (default) |
 | `/guard network off` | `/guard noff` | Block all outbound network |
+
+All slash-command changes are runtime overrides: they never rewrite `.pi/pi-guard.json`, and a new Pi run restores project defaults. `/guard <Tab>` offers the canonical commands. `/guard status` lists the active overrides; the compact footer shows states such as `[Guard: workspace-write · DCG]`, `[Guard: sandbox-off · built-in]`, and `[Guard: OFF]`.
+
+Turning the sandbox off leaves the path policies and Bash policy active, but Agent Bash has normal host filesystem and network permissions. Turning Guard off disables all of them until the user runs `/guard on`.
 
 > **Note:** Even with network open, `ping` (ICMP) is unavailable inside the sandbox. Bubblewrap drops `CAP_NET_RAW` by default. HTTP/HTTPS (curl, wget, git, etc.) work normally.
 
@@ -149,7 +157,21 @@ Guard takes effect immediately after initialization. The footer shows the curren
 
 ---
 
-## 6. Troubleshooting
+## 6. Optional DCG policy engine (TUI only)
+
+Pi Guard operates only when `ctx.mode === "tui"`. In print, JSON, RPC, and other non-TUI modes it does not initialize the sandbox, invoke DCG, intercept tools, or render UI.
+
+[Destructive Command Guard (DCG)](https://github.com/Dicklesworthstone/destructive_command_guard) is an optional external Bash policy engine, not a sandbox and not an npm dependency. Install and upgrade it yourself, then verify it in the environment that starts Pi:
+
+```bash
+dcg --version
+```
+
+Pi Guard automatically uses `dcg --robot test "<command>"` when DCG is enabled and available. Set `DCG_BIN=/path/to/dcg` when it is not on `PATH`. A genuinely missing executable falls back quietly to `bashPolicy`; a timed-out, signaled, or otherwise failed availability check is shown as `DCG:error` and follows `onError`. A DCG process timeout is bounded to one second plus a short termination grace period, so an optional integration cannot wait forever. A malformed, timed-out, or failed DCG call never falls through to the built-in policy for that same command: its `onError` action applies instead.
+
+DCG only sees Agent calls to the standard `bash` tool. It does not guard `!cmd`, `!!cmd`, custom shell tools, or scan arbitrary `bash script.sh` file contents. The OS sandbox remains the hard filesystem/network boundary.
+
+## 7. Troubleshooting
 
 | Status | Cause | Action |
 |--------|-------|--------|
@@ -159,7 +181,7 @@ Guard takes effect immediately after initialization. The footer shows the curren
 
 ---
 
-## 7. Configuration: `.pi/pi-guard.json`
+## 8. Configuration: `.pi/pi-guard.json`
 
 `/guard init` generates this file. You can edit it by hand (requires `/reload` to take effect).
 
@@ -167,8 +189,16 @@ Guard takes effect immediately after initialization. The footer shows the curren
 
 ```json
 {
+  "enabled": true,
+  "sandbox": { "enabled": true },
   "mode": "workspace-write",
   "network": "open",
+  "dcg": {
+    "enabled": true,
+    "onDeny": "confirm",
+    "onIndeterminate": "notify",
+    "onError": "notify"
+  },
 
   "sensitiveReadDeny": [
     "~/.ssh",
@@ -207,8 +237,12 @@ Guard takes effect immediately after initialization. The footer shows the curren
 
 | Field | Description |
 |-------|-------------|
+| `enabled` | Project startup default for the Guard master switch |
+| `sandbox.enabled` | Project startup default for OS sandbox wrapping |
 | `mode` | `"readonly"` or `"workspace-write"`. Switch with `/guard r` / `/guard w` |
 | `network` | `"open"` (outbound allowed) or `"blocked"` (all outbound denied). Switch with `/guard non` / `/guard noff` |
+| `dcg.enabled` | Use DCG automatically when its binary is available |
+| `dcg.onDeny`, `dcg.onIndeterminate`, `dcg.onError` | One of `"allow"`, `"notify"`, `"confirm"`, or `"block"`; defaults are `confirm`, `notify`, and `notify` |
 | `sensitiveReadDeny` | Paths blocked from all Agent reads. Supports `~` and globs |
 | `protectedPaths.block` | Paths where `write` / `edit` are rejected outright |
 | `protectedPaths.approval` | Paths where `write` / `edit` trigger an approval prompt |

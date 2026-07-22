@@ -80,7 +80,7 @@ test("invalid config becomes invalid-config and stays inactive", async () => {
   assert.match(status.error, /mode/);
 });
 
-test("mode switching persists to config and updates status immediately", async () => {
+test("mode switching is a runtime override and updates status immediately", async () => {
   const cwd = tempWorkspace();
   const sandbox = createSandbox();
   const guard = createGuardController({ cwd, sandbox });
@@ -91,7 +91,8 @@ test("mode switching persists to config and updates status immediately", async (
 
   assert.equal(status.kind, "readonly");
   assert.equal(status.mode, "readonly");
-  assert.equal(saved.mode, "readonly");
+  assert.equal(saved.mode, "workspace-write");
+  assert.deepEqual(status.overrides, ["mode"]);
   assert.equal(sandbox.applied.at(-1).filesystem.allowWrite.includes("/tmp"), true);
 });
 
@@ -133,7 +134,7 @@ test("network open gives sandbox undefined allowedDomains", async () => {
   assert.equal(lastConfig.network.allowedDomains, undefined);
 });
 
-test("setNetwork persists blocked to config and refreshes sandbox", async () => {
+test("setNetwork is a runtime override and refreshes sandbox", async () => {
   const cwd = tempWorkspace();
   const sandbox = createSandbox();
   const guard = createGuardController({ cwd, sandbox });
@@ -144,11 +145,12 @@ test("setNetwork persists blocked to config and refreshes sandbox", async () => 
   const saved = JSON.parse(readFileSync(join(cwd, ".pi", "pi-guard.json"), "utf8"));
 
   assert.equal(status.kind, "workspace-write");
-  assert.equal(saved.network, "blocked");
+  assert.equal(saved.network, "open");
+  assert.deepEqual(status.overrides, ["network"]);
   assert.equal(sandbox.applied.at(-1).network.allowedDomains.length, 0);
 });
 
-test("setNetwork open persists to config and refreshes sandbox", async () => {
+test("setNetwork open does not rewrite the project default", async () => {
   const cwd = tempWorkspace();
   const sandbox = createSandbox();
   const guard = createGuardController({ cwd, sandbox });
@@ -160,7 +162,7 @@ test("setNetwork open persists to config and refreshes sandbox", async () => {
   const status = await guard.setNetwork("open");
   const saved = JSON.parse(readFileSync(join(cwd, ".pi", "pi-guard.json"), "utf8"));
 
-  assert.equal(saved.network, "open");
+  assert.equal(saved.network, "blocked");
   assert.equal(sandbox.applied.at(-1).network.allowedDomains, undefined);
 });
 
@@ -193,7 +195,7 @@ test("invalid network value becomes invalid-config", async () => {
   assert.match(status.error, /network/);
 });
 
-test("mode switch preserves network setting", async () => {
+test("runtime mode and network overrides leave defaults unchanged", async () => {
   const cwd = tempWorkspace();
   const sandbox = createSandbox();
   const guard = createGuardController({ cwd, sandbox });
@@ -203,8 +205,8 @@ test("mode switch preserves network setting", async () => {
   await guard.setMode("readonly");
   const saved = JSON.parse(readFileSync(join(cwd, ".pi", "pi-guard.json"), "utf8"));
 
-  assert.equal(saved.mode, "readonly");
-  assert.equal(saved.network, "blocked");
+  assert.equal(saved.mode, "workspace-write");
+  assert.equal(saved.network, "open");
   assert.match(guard.getStatus().text, /Guard: read-only · network: blocked/);
 });
 
