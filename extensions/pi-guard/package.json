@@ -1,6 +1,6 @@
 {
   "name": "pi-guard-sandbox",
-  "version": "0.2.4",
+  "version": "0.3.0",
   "description": "A lightweight OS-level guard for Pi: agents stay useful, sensitive paths stay blocked, and writes stay inside the workspace you allow. No container overhead. No workflow drama.",
   "repository": {
     "type": "git",
