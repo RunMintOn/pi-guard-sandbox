@@ -12,7 +12,10 @@
   </a>
 </p>
 
-> [!TIP]  
+> [!IMPORTANT]
+> Support for [Destructive Command Guard](https://github.com/Dicklesworthstone/destructive_command_guard) [![DCG GitHub Stars](https://img.shields.io/github/stars/Dicklesworthstone/destructive_command_guard?style=flat&label=DCG%20stars)](https://github.com/Dicklesworthstone/destructive_command_guard) has been added; you install, maintain, and upgrade DCG yourself.
+
+> [!NOTE]
 > Two rounds of real-world testing — **all passed**. Routine bash, file I/O, and git operations feel seamless. Out-of-bounds writes, dangerous commands, and sensitive reads are blocked on contact.
 
 ---
@@ -26,6 +29,7 @@
 
 **Pi Guard** is a high-agency, OS-level sandbox for Pi. Let your Agent work freely where it should, block it where it shouldn’t — with real boundary enforcement, interactive permission prompts, and no heavy workflow overhead.
 
+- ⚙️ **Fully controllable**: configure protection mode, network, Sandbox, and DCG policy per project, then adjust them temporarily in the current Pi run
 - 🧠 **High-agency**: full freedom inside the workspace, hard stops only at the boundary
 - 🪶 **Clean**: minimal setup, intuitive config, low-friction daily use
 - 🛡️ **Hardened**: bash runs in a real sandbox, not string-matching theater
@@ -39,6 +43,7 @@
 
 ## Changelog
 
+- **0.2.4** — Added optional [Destructive Command Guard (DCG)](https://github.com/Dicklesworthstone/destructive_command_guard) integration, runtime Guard/Sandbox/DCG switches, `/guard` argument completion, and Footer status.
 - **0.2.1** — Sandbox now inherits host environment variables and uses the real `HOME`. Fixes tools that read config files or API keys from `~/.` paths (e.g. Tavily).
 - **0.2.0** — Network toggle: `/guard non` / `/guard noff` to allow or block all outbound network. Default open. Footer shows `· network: open|blocked`.
 - **0.1.0** — Initial release: write-boundary protection, read-only / workspace-write modes, sandboxed bash, dangerous command blocking.

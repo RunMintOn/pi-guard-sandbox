@@ -1,3 +1,6 @@
+<img src="1image.png" width="720" />
+
+
 <p align="left">
   <a href="https://www.npmjs.com/package/pi-guard-sandbox">
     <img src="https://img.shields.io/npm/v/pi-guard-sandbox" alt="npm version" />
@@ -10,13 +13,18 @@
   </a>
 </p>
 
-> [!TIP]  
+
+> [!IMPORTANT]
+> 已加入对 [Destructive Command Guard](https://github.com/Dicklesworthstone/destructive_command_guard) [![DCG GitHub Stars](https://img.shields.io/github/stars/Dicklesworthstone/destructive_command_guard?style=flat&label=DCG%20stars)](https://github.com/Dicklesworthstone/destructive_command_guard) 的支持；DCG 需要您自行下载、安装和升级。
+
+> [!NOTE]
 > 两轮真实环境测试 **全部通过**：日常 bash、文件读写、git 操作丝滑无感；越界写入、危险命令、敏感读取一击即拦。
 
 **支持平台：Linux / WSL。** macOS 未测试，理论上可能可用。Windows 不支持。
 
 **Pi Guard** 给你的 Agent 加了一层 OS 级的**写边界保护**。它不靠正则猜意图，不搞令牌审批地狱。它知道什么时候该闭嘴让你干活，什么时候该出手替你挡刀。
 
+- ⚙️ **完全可控**：保护模式、网络、Sandbox 和 DCG 策略都可按项目配置，并可在当前 Pi 运行中临时调整
 - 🧠 **聪明**：工作区内任意发挥，工作区外寸步难行
 - 🪶 **无感**：不打断你的正常编码流，只拦截真正越界的操作
 - 🛡️ **硬核**：bash 命令运行在真实 sandbox 里，不是字符串匹配
@@ -25,12 +33,13 @@
 
 ---
 
-[English](README.md)
+**[English](README.md)**
 
 ---
 
 ## Changelog
 
+- **0.2.4** — 新增可选 [Destructive Command Guard (DCG)](https://github.com/Dicklesworthstone/destructive_command_guard) 集成、运行时 Guard／Sandbox／DCG 开关、`/guard` 参数补全和 Footer 状态显示。
 - **0.2.1** — 沙箱继承宿主机环境变量，使用真实 `HOME`。修复 Tavily 等依赖 `~/.` 配置文件的工具。
 - **0.2.0** — 新增网络开关：`/guard non` / `/guard noff` 打开或阻断全部外网连接。默认开放。footer 显示 `· network: open|blocked`。
 - **0.1.0** — 初始发布：写边界保护，read-only / workspace-write 双模式，bash 沙箱，危险命令拦截。
