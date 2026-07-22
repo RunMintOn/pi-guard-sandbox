@@ -24,8 +24,10 @@
 ---
 **Platform: Linux / WSL.** macOS may work but hasn't been tested. Windows is not supported.
 
-<img src="image-1.png" width="500" />
-<img src="image.png" width="500" />
+<p align="center">
+  <img src="image-1.png" width="49%" />
+  <img src="image.png" width="49%" />
+</p>
 
 **Pi Guard** is a high-agency, OS-level sandbox for Pi. Let your Agent work freely where it should, block it where it shouldn’t — with real boundary enforcement, interactive permission prompts, and no heavy workflow overhead.
 
